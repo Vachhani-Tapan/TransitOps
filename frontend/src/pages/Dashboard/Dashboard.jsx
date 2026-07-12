@@ -10,6 +10,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import StatCard from '../../components/ui/StatCard';
 import StatusChip from '../../components/ui/StatusChip';
+import AdminDashboard from './AdminDashboard';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -76,6 +77,8 @@ export default function Dashboard() {
 
   // Dispatch layout view depending on the user's role
   switch (user.role) {
+    case 'ADMIN':
+      return <AdminDashboard kpis={data.kpis} recentUsers={data.recentUsers} systemActivity={data.systemActivity} />;
     case 'FLEET_MANAGER':
       return <FleetManagerDashboard kpis={data.kpis} fleetStatus={data.fleetStatusData} recentTrips={data.recentTrips} maintenance={data.activeMaintenance} />;
     case 'DISPATCHER':
