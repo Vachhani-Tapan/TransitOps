@@ -1,7 +1,8 @@
 export default function CinematicHero() {
   return (
     <div className="cinematic-hero">
-      {/* Absolute Brand Header positioned top-left over the image */}
+      {/* React branding overlay commented out to prevent collision with embedded mockup assets */}
+      {/*
       <div className="hero-brand-header">
         <svg
           className="brand-logo-svg"
@@ -11,7 +12,6 @@ export default function CinematicHero() {
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          {/* Logo icon matching the blue and orange stylized "T" shape */}
           <path
             d="M11 6C11 4.89543 11.8954 4 13 4H23C24.1046 4 25 4.89543 25 6V8C25 9.10457 24.1046 10 23 10H19V24C19 25.1046 18.1046 26 17 26H15C13.8954 26 13 25.1046 13 24V10H12C11.8954 10 11 9.10457 11 8V6Z"
             fill="#0B1F3A"
@@ -30,6 +30,7 @@ export default function CinematicHero() {
           </span>
         </div>
       </div>
+      */}
 
       {/* The background image contains the pre-compiled visual assets */}
       <div className="hero-bg-image" />
