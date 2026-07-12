@@ -473,7 +473,7 @@
 .demo-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px; /* Increased grid spacing */
+  gap: 8px; /* Compact grid gap */
 }
 
 /* Symmetrical alignment: when there is an odd number of cards, make the last one span full width */
@@ -485,7 +485,7 @@
 
 @media (min-width: 481px) {
   .demo-card:last-child:nth-child(odd) {
-    max-width: calc(50% - 7px);
+    max-width: calc(50% - 4px);
   }
 }
 
@@ -494,8 +494,8 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 14px; /* Increased gap */
-  padding: 14px 16px; /* Expanded padding to fill cards naturally and look spacious */
+  gap: 8px; /* Compact layout gap */
+  padding: 8px 10px; /* Thinner padding */
   background-color: #ffffff; /* pure white card background */
   border: 1px solid var(--border-panel);
   border-radius: var(--radius-md);
@@ -505,20 +505,20 @@
 
 .demo-card:hover {
   border-color: rgba(0, 0, 0, 0.12);
-  transform: translateY(-2px); /* Enhanced visual hover trigger */
-  box-shadow: 0 6px 16px -3px rgba(11, 31, 58, 0.06);
+  transform: translateY(-1px); /* Subtle premium hover */
+  box-shadow: 0 4px 12px -3px rgba(11, 31, 58, 0.05);
 }
 
 .demo-card.selected {
   border-color: var(--color-orange);
-  box-shadow: 0 6px 18px -4px rgba(249, 115, 22, 0.15);
+  box-shadow: 0 4px 12px -4px rgba(249, 115, 22, 0.12);
 }
 
 /* Left Outline Icon Circle Box */
 .demo-card-icon-container {
-  width: 44px; /* Slightly larger */
-  height: 44px;
-  border-radius: var(--radius-md);
+  width: 32px; /* Compressed icon box */
+  height: 32px;
+  border-radius: var(--radius-sm);
   background-color: #ffffff;
   border: 1px solid var(--border-panel);
   display: flex;
@@ -541,32 +541,32 @@
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  gap: 2px;
+  gap: 1px;
 }
 
 .demo-card-role {
-  font-size: 0.85rem; /* Larger role title text */
-  font-weight: 850;
+  font-size: 0.75rem; /* Thinner role title text */
+  font-weight: 800;
   color: var(--text-primary);
-  line-height: 1.2;
+  line-height: 1.1;
 }
 
 .demo-card-email {
-  font-size: 0.725rem; /* Expanded email readability */
+  font-size: 0.65rem; /* Smaller email */
   color: var(--text-secondary);
-  line-height: 1.2;
-  margin-bottom: 6px;
+  line-height: 1.1;
+  margin-bottom: 2px;
 }
 
 /* Peach Use Account Badge */
 .use-account-badge {
   display: inline-flex;
   align-self: flex-start;
-  padding: 4px 10px; /* Taller badge */
+  padding: 2px 6px; /* Compressed badge */
   background-color: var(--color-orange-light);
   border-radius: var(--radius-sm);
   color: var(--color-orange);
-  font-size: 0.65rem;
+  font-size: 0.58rem; /* Smaller text */
   font-weight: 800;
   letter-spacing: 0.02em;
   transition: background-color var(--transition-fast);
@@ -579,16 +579,16 @@
 /* Subtle absolute copy button aligned top-right */
 .copy-button-subtle {
   position: absolute;
-  top: 8px;
-  right: 8px;
+  top: 6px;
+  right: 6px;
   background: none;
   border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 2px;
   color: var(--text-muted);
-  padding: 4px;
+  padding: 2px;
   border-radius: var(--radius-sm);
   opacity: 0.3;
   transition: opacity var(--transition-fast), color var(--transition-fast), background-color var(--transition-fast);

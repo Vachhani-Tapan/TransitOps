@@ -2,17 +2,7 @@ export default function StatCard({ icon: Icon, label, value, sub, delta, deltaLa
   const isPositiveDelta = delta && delta > 0;
   
   return (
-    <div style={{
-      background: '#ffffff',
-      border: '1px solid #e2e8f0',
-      borderRadius: 12,
-      padding: '18px 20px',
-      boxShadow: '0 1px 3px 0 rgba(0,0,0,0.05)',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'space-between',
-      position: 'relative'
-    }}>
+    <div className="stat-card-premium">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div>
           <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 4 }}>

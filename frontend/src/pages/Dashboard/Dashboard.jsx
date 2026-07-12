@@ -112,7 +112,7 @@ function FleetManagerDashboard({ kpis, fleetStatus, recentTrips, maintenance }) 
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, flexWrap: 'wrap' }}>
         {/* Fleet status breakdown bar chart */}
-        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 12, padding: 20, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+        <div className="card-premium" style={{ flex: 1 }}>
           <h3 style={{ margin: '0 0 16px 0', fontSize: '0.95rem', fontWeight: 800, color: '#0f172a' }}>Fleet Status Distribution</h3>
           <ResponsiveContainer width="100%" height={180}>
             <BarChart data={fleetStatus} layout="vertical" margin={{ left: 10, right: 20, top: 10 }}>
@@ -129,7 +129,7 @@ function FleetManagerDashboard({ kpis, fleetStatus, recentTrips, maintenance }) 
         </div>
 
         {/* Active Open Maintenance List */}
-        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 12, padding: 20, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+        <div className="card-premium" style={{ flex: 1 }}>
           <h3 style={{ margin: '0 0 16px 0', fontSize: '0.95rem', fontWeight: 800, color: '#0f172a' }}>Active Maintenance Logs</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {maintenance.length > 0 ? maintenance.map(m => (
@@ -148,27 +148,27 @@ function FleetManagerDashboard({ kpis, fleetStatus, recentTrips, maintenance }) 
       </div>
 
       {/* Recent Trips Table */}
-      <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 12, padding: 20, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+      <div className="card-premium">
         <h3 style={{ margin: '0 0 16px 0', fontSize: '0.95rem', fontWeight: 800, color: '#0f172a' }}>Recent Trips Activity</h3>
         <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem', textAlign: 'left' }}>
+          <table className="premium-table">
             <thead>
-              <tr style={{ borderBottom: '2px solid #f1f5f9', color: '#64748b', fontWeight: 700 }}>
-                <th style={{ padding: '10px 8px' }}>Route</th>
-                <th style={{ padding: '10px 8px' }}>Vehicle</th>
-                <th style={{ padding: '10px 8px' }}>Driver</th>
-                <th style={{ padding: '10px 8px' }}>Dispatched</th>
-                <th style={{ padding: '10px 8px' }}>Status</th>
+              <tr>
+                <th>Route</th>
+                <th>Vehicle</th>
+                <th>Driver</th>
+                <th>Dispatched</th>
+                <th>Status</th>
               </tr>
             </thead>
             <tbody>
               {recentTrips.map(trip => (
-                <tr key={trip.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                  <td style={{ padding: '12px 8px', fontWeight: 600, color: '#0f172a' }}>{trip.route}</td>
-                  <td style={{ padding: '12px 8px' }}>{trip.vehicle}</td>
-                  <td style={{ padding: '12px 8px' }}>{trip.driver}</td>
-                  <td style={{ padding: '12px 8px', color: '#64748b' }}>{new Date(trip.timestamp).toLocaleDateString()}</td>
-                  <td style={{ padding: '12px 8px' }}><StatusChip status={trip.status} /></td>
+                <tr key={trip.id}>
+                  <td style={{ fontWeight: 600, color: '#0f172a' }}>{trip.route}</td>
+                  <td>{trip.vehicle}</td>
+                  <td>{trip.driver}</td>
+                  <td style={{ color: '#64748b' }}>{new Date(trip.timestamp).toLocaleDateString()}</td>
+                  <td><StatusChip status={trip.status} /></td>
                 </tr>
               ))}
             </tbody>
@@ -195,7 +195,7 @@ function DispatcherDashboard({ kpis, pendingTrips, activeTrips, vehicles, driver
 
       <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: 20 }}>
         {/* Active Trips queue */}
-        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 12, padding: 20, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+        <div className="card-premium">
           <h3 style={{ margin: '0 0 16px 0', fontSize: '0.95rem', fontWeight: 800, color: '#0f172a' }}>Active Operations</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {activeTrips.length > 0 ? activeTrips.map(trip => (
@@ -216,7 +216,7 @@ function DispatcherDashboard({ kpis, pendingTrips, activeTrips, vehicles, driver
 
         {/* Resources Available */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 12, padding: 20, boxShadow: '0 1px 3px rgba(0,0,0,0.05)', flex: 1 }}>
+          <div className="card-premium" style={{ flex: 1 }}>
             <h3 style={{ margin: '0 0 12px 0', fontSize: '0.9rem', fontWeight: 800, color: '#0f172a' }}>Available Drivers</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {drivers.length > 0 ? drivers.slice(0, 4).map(d => (
@@ -230,7 +230,7 @@ function DispatcherDashboard({ kpis, pendingTrips, activeTrips, vehicles, driver
             </div>
           </div>
 
-          <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 12, padding: 20, boxShadow: '0 1px 3px rgba(0,0,0,0.05)', flex: 1 }}>
+          <div className="card-premium" style={{ flex: 1 }}>
             <h3 style={{ margin: '0 0 12px 0', fontSize: '0.9rem', fontWeight: 800, color: '#0f172a' }}>Available Vehicles</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {vehicles.length > 0 ? vehicles.slice(0, 4).map(v => (
@@ -265,7 +265,7 @@ function DriverDashboard({ driver, activeTrip, upcomingTrips, errorMsg }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
       {/* Driver metadata card */}
-      <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 12, padding: 20, boxShadow: '0 1px 3px rgba(0,0,0,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
+      <div className="card-premium" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
         <div>
           <h2 style={{ margin: '0 0 4px 0', fontSize: '1.25rem', fontWeight: 800, color: '#0f172a' }}>Welcome, {driver.name}</h2>
           <p style={{ margin: 0, color: '#64748b', fontSize: '0.8rem' }}>License: <strong>{driver.licenseNumber}</strong> · Status: <StatusChip status={driver.status} /></p>
@@ -283,7 +283,7 @@ function DriverDashboard({ driver, activeTrip, upcomingTrips, errorMsg }) {
       </div>
 
       {/* Active trip section */}
-      <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 12, padding: 20, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+      <div className="card-premium">
         <h3 style={{ margin: '0 0 16px 0', fontSize: '0.95rem', fontWeight: 800, color: '#0f172a' }}>Current Assigned Route</h3>
         {activeTrip ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -316,7 +316,7 @@ function DriverDashboard({ driver, activeTrip, upcomingTrips, errorMsg }) {
       </div>
 
       {/* Upcoming Trips list */}
-      <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 12, padding: 20, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+      <div className="card-premium">
         <h3 style={{ margin: '0 0 16px 0', fontSize: '0.95rem', fontWeight: 800, color: '#0f172a' }}>Upcoming Assignments</h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {upcomingTrips.length > 0 ? upcomingTrips.map(trip => (
@@ -352,7 +352,7 @@ function SafetyOfficerDashboard({ kpis, distribution, alertingDrivers }) {
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
         {/* Compliance Distribution Pie/Donut Chart */}
-        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 12, padding: 20, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+        <div className="card-premium">
           <h3 style={{ margin: '0 0 16px 0', fontSize: '0.95rem', fontWeight: 800, color: '#0f172a' }}>Driver Safety Classification</h3>
           <div style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap', justifyContent: 'center' }}>
             <ResponsiveContainer width={160} height={160}>
@@ -382,7 +382,7 @@ function SafetyOfficerDashboard({ kpis, distribution, alertingDrivers }) {
         </div>
 
         {/* Compliance Alerts Panel */}
-        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 12, padding: 20, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+        <div className="card-premium">
           <h3 style={{ margin: '0 0 16px 0', fontSize: '0.95rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: 6 }}>
             <AlertTriangle size={18} color="#ef4444" /> Urgent Compliance Alerts
           </h3>
@@ -427,7 +427,7 @@ function FinancialAnalystDashboard({ kpis, breakdown, roiData }) {
 
       <div style={{ display: 'grid', gridTemplateColumns: '0.8fr 1.2fr', gap: 20 }}>
         {/* Cost Breakdown Donut Chart */}
-        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 12, padding: 20, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+        <div className="card-premium">
           <h3 style={{ margin: '0 0 16px 0', fontSize: '0.95rem', fontWeight: 800, color: '#0f172a' }}>Expense Breakdown</h3>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
             <ResponsiveContainer width="100%" height={160}>
@@ -459,27 +459,27 @@ function FinancialAnalystDashboard({ kpis, breakdown, roiData }) {
         </div>
 
         {/* ROI Table */}
-        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 12, padding: 20, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+        <div className="card-premium">
           <h3 style={{ margin: '0 0 16px 0', fontSize: '0.95rem', fontWeight: 800, color: '#0f172a' }}>Vehicle ROI Snapshot</h3>
           <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', textAlign: 'left' }}>
+            <table className="premium-table">
               <thead>
-                <tr style={{ borderBottom: '2px solid #f1f5f9', color: '#64748b', fontWeight: 700 }}>
-                  <th style={{ padding: '8px 6px' }}>Vehicle</th>
-                  <th style={{ padding: '8px 6px' }}>Revenue</th>
-                  <th style={{ padding: '8px 6px' }}>Costs</th>
-                  <th style={{ padding: '8px 6px' }}>Profit</th>
-                  <th style={{ padding: '8px 6px' }}>ROI</th>
+                <tr>
+                  <th>Vehicle</th>
+                  <th>Revenue</th>
+                  <th>Costs</th>
+                  <th>Profit</th>
+                  <th>ROI</th>
                 </tr>
               </thead>
               <tbody>
                 {roiData.slice(0, 5).map(v => (
-                  <tr key={v.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                    <td style={{ padding: '10px 6px', fontWeight: 600, color: '#0f172a' }}>{v.registrationNumber}<br /><span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 500 }}>{v.model}</span></td>
-                    <td style={{ padding: '10px 6px' }}>₹{v.revenue.toLocaleString('en-IN')}</td>
-                    <td style={{ padding: '10px 6px' }}>₹{v.costs.toLocaleString('en-IN')}</td>
-                    <td style={{ padding: '10px 6px' }}>₹{v.profit.toLocaleString('en-IN')}</td>
-                    <td style={{ padding: '10px 6px', fontWeight: 700, color: v.roiPercent >= 0 ? '#166534' : '#991b1b' }}>{v.roiPercent}%</td>
+                  <tr key={v.id}>
+                    <td style={{ fontWeight: 600, color: '#0f172a' }}>{v.registrationNumber}<br /><span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 500 }}>{v.model}</span></td>
+                    <td>₹{v.revenue.toLocaleString('en-IN')}</td>
+                    <td>₹{v.costs.toLocaleString('en-IN')}</td>
+                    <td>₹{v.profit.toLocaleString('en-IN')}</td>
+                    <td style={{ fontWeight: 700, color: v.roiPercent >= 0 ? '#166534' : '#991b1b' }}>{v.roiPercent}%</td>
                   </tr>
                 ))}
               </tbody>

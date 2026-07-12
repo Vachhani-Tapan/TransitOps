@@ -92,7 +92,7 @@ export default function DemoAccessGrid({ selectedEmail, onSelectAccount }) {
             >
               {/* Card Left: Outline Icon */}
               <div className="demo-card-icon-container">
-                <Icon size={28} strokeWidth={1.5} style={{ color: account.color }} />
+                <Icon size={18} strokeWidth={1.5} style={{ color: account.color }} />
               </div>
 
               {/* Card Center: Title, Email & Use account Badge */}
