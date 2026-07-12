@@ -1,9 +1,16 @@
-const express = require('express');
-const router = express.Router();
+const router = require('express').Router();
+const ctrl = require('../controllers/safety.controller');
+const authenticate = require('../middleware/authenticate');
+const authorize = require('../middleware/authorize');
 
-// Placeholder safety routes to prevent merge conflict server crashes
-router.get('/safety/summary', (req, res) => {
-  res.json({ success: true, message: 'Placeholder safety summary' });
-});
+// Enforce authentication for all safety endpoints
+router.use(authenticate);
+
+// Enforce Safety Officer authorization
+router.use(authorize('SAFETY_OFFICER'));
+
+router.get('/safety/drivers', ctrl.getDrivers);
+router.put('/safety/drivers/:id/status', ctrl.toggleDriverSuspension);
+router.get('/safety/trips/eligibility', ctrl.getTripsEligibility);
 
 module.exports = router;
