@@ -11,6 +11,8 @@ import { useAuth } from '../../context/AuthContext';
 import StatCard from '../../components/ui/StatCard';
 import StatusChip from '../../components/ui/StatusChip';
 import AdminDashboard from './AdminDashboard';
+import SafetyOfficerDashboard from './SafetyOfficerDashboard';
+
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
