@@ -1,0 +1,107 @@
+/* ===== TransitOps Design System — Light Mode Only Cinematic Theme ===== */
+
+:root {
+  /* Core Brand & Accents */
+  --color-orange: #f97316; /* Warm operational orange */
+  --color-orange-hover: #ea580c;
+  --color-orange-light: rgba(249, 115, 22, 0.1);
+
+  /* Page Backgrounds */
+  --bg-page: #f8fafc; /* Soft off-white */
+  --bg-split-gradient: radial-gradient(circle at 30% 30%, #f1f5f9 0%, #f8fafc 100%);
+  --bg-panel: rgba(255, 255, 255, 0.88); /* Translucent soft panel */
+  --border-panel: #e2e8f0;
+  
+  /* Input Elements */
+  --bg-input: #ffffff;
+  --border-input: #cbd5e1; /* slate-300 */
+  --border-input-focus: #f97316;
+  --shadow-input-focus: rgba(249, 115, 22, 0.18);
+
+  /* Typography */
+  --text-primary: #0b1f3a; /* Deep primary navy */
+  --text-secondary: #64748b; /* Cool secondary slate-500 */
+  --text-muted: #94a3b8; /* Muted slate-400 */
+  --text-inverse: #ffffff;
+
+  /* Status Colors */
+  --color-error: #ef4444;
+  --bg-error-alert: rgba(239, 68, 68, 0.05);
+  --border-error-alert: rgba(239, 68, 68, 0.15);
+  --color-success: #10b981;
+
+  /* Font Families */
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-normal: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 600ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Radius and Shadows */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --shadow-panel: 0 20px 40px -15px rgba(11, 31, 58, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.04);
+}
+
+/* Reset */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+  background-color: var(--bg-page);
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Accessible outline focus */
+*:focus-visible {
+  outline: 2px solid var(--color-orange);
+  outline-offset: 4px;
+}
+
+/* Utility Monospace */
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Reduced Motion Override */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-delay: 0s !important;
+    animation-duration: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0s !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Responsive visibility utilities */
+@media (min-width: 769px) {
+  .mobile-only-btn {
+    display: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none !important;
+  }
+}
+

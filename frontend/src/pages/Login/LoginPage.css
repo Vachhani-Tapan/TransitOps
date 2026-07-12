@@ -1,0 +1,670 @@
+/* ===== TransitOps LoginPage Layout & Light-Theme Styling ===== */
+
+/* Base Viewport Split */
+.login-viewport {
+  display: flex;
+  flex-direction: row;
+  min-height: 100vh;
+  width: 100vw;
+  background-color: var(--bg-page);
+  overflow: hidden;
+}
+
+/* ==========================================
+   LEFT SIDE: CINEMATIC HERO
+   ========================================== */
+.cinematic-hero {
+  position: relative;
+  width: 60%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Cinematic Hero Brand Header */
+.hero-brand-header {
+  position: absolute;
+  top: 40px;
+  left: 40px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 10;
+}
+
+.brand-logo-svg {
+  flex-shrink: 0;
+}
+
+.brand-text-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.hero-brand-header .brand-logo-text {
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.hero-brand-header .brand-subtitle-text {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+/* Background Image Layer using the provided TransitOPS_login mockup directly */
+.hero-bg-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('/TransitOPS_login.png');
+  background-size: cover;
+  background-position: left center; /* Align left to prevent text cropping */
+  transform-origin: left center; /* Scale from the left edge so zoom does not crop text or logo */
+  z-index: 1;
+  transform: scale(1.03);
+  animation: heroZoomIn 10s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes heroZoomIn {
+  to {
+    transform: scale(1.00);
+  }
+}
+
+/* Soft atmospheric overlays to blend details into the page seam */
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 92%, var(--bg-page) 100%);
+  z-index: 2;
+}
+
+.hero-vignette {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle, rgba(255,255,255,0) 60%, rgba(248, 250, 252, 0.15) 100%);
+  z-index: 3;
+}
+
+
+/* ==========================================
+   RIGHT SIDE: AUTHENTICATION PANEL
+   ========================================== */
+.auth-panel {
+  position: relative;
+  width: 40%;
+  height: 100vh;
+  background-color: var(--bg-page);
+  background-image: var(--bg-split-gradient);
+  display: flex;
+  flex-direction: column;
+  padding: 40px 44px; /* Increased vertical padding to use the vertical height properly */
+  overflow-y: auto;
+  z-index: 10;
+  border-left: 1px solid var(--border-panel);
+  animation: panelSlideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes panelSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.auth-container {
+  max-width: 420px;
+  width: 100%;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px; /* Restored gap to use space properly and make page breathe */
+}
+
+/* Typographic Logo branding - Moved to hero-brand-header */
+.accent-ops {
+  color: var(--color-orange);
+}
+
+.brand-subtitle-text {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.auth-form-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.auth-eyebrow {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: var(--color-orange);
+}
+
+.auth-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.auth-subtitle {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* Development Status Banner */
+.status-banner {
+  background-color: var(--color-orange-light);
+  border: 1px solid rgba(249, 115, 22, 0.25);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  color: var(--color-orange-hover);
+  animation: pulseBanner 2s ease-in-out infinite;
+}
+
+@keyframes pulseBanner {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.85; }
+}
+
+.status-banner-text {
+  font-size: 0.775rem;
+  font-weight: 700;
+  display: block;
+  text-align: center;
+}
+
+/* Login Form Layout */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px; /* Balanced spacing between inputs */
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.input-label {
+  font-size: 0.725rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.forgot-password-link {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-orange);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.forgot-password-link:hover {
+  color: var(--color-orange-hover);
+  text-decoration: underline;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 14px; /* Adjusted spacing */
+  color: var(--text-secondary);
+  pointer-events: none;
+}
+
+.input-field {
+  width: 100%;
+  height: 44px; /* Premium taller input fields */
+  padding: 12px 14px 12px 42px; /* Proportional padding */
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-input);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  outline: none;
+}
+
+.input-field:focus {
+  border-color: var(--border-input-focus);
+  box-shadow: 0 0 0 3px var(--shadow-input-focus);
+}
+
+.input-field.has-error {
+  border-color: var(--color-error);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+}
+
+.input-field::placeholder {
+  color: var(--text-muted);
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+}
+
+.password-toggle-btn:hover {
+  color: var(--text-secondary);
+}
+
+/* Error Alert */
+.error-alert {
+  padding: 8px 12px;
+  background-color: var(--bg-error-alert);
+  border: 1px solid var(--border-error-alert);
+  border-radius: var(--radius-sm);
+  color: var(--color-error);
+  font-size: 0.725rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+}
+
+/* Remember Me Checkbox & Forgot Password Row */
+.remember-forgot-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.remember-me-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.checkbox-input {
+  width: 15px;
+  height: 15px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-input);
+  background-color: var(--bg-input);
+  cursor: pointer;
+  accent-color: var(--color-orange);
+}
+
+.checkbox-label {
+  font-size: 0.725rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  user-select: none;
+  cursor: pointer;
+}
+
+/* Submit Button styling */
+.submit-button {
+  width: 100%;
+  height: 48px; /* Taller premium button height to look massive and solid */
+  background-color: var(--color-orange);
+  color: var(--text-inverse);
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: background-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.submit-button:hover:not(:disabled) {
+  background-color: var(--color-orange-hover);
+}
+
+.submit-button:active:not(:disabled) {
+  transform: scale(0.995);
+}
+
+.submit-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.submit-btn-content-centered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  position: relative;
+}
+
+.submit-text {
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.submit-arrow-circle {
+  position: absolute;
+  right: 6px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  color: var(--color-orange);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--transition-fast);
+}
+
+.submit-button:hover:not(:disabled) .submit-arrow-circle {
+  transform: translateX(2px);
+}
+
+/* Spinner Loader */
+.loading-spinner-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #ffffff;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+
+/* ==========================================
+   DEMO ACCESS Centered divider header
+   ========================================== */
+.demo-access-section {
+  border-top: 1px solid var(--border-panel);
+  padding-top: 24px; /* Increased vertical space */
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* Increased gap */
+}
+
+.demo-access-header-centered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.divider-line {
+  flex-grow: 1;
+  height: 1px;
+  background-color: var(--border-panel);
+}
+
+.demo-access-title {
+  font-size: 0.675rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+.demo-access-subtitle-centered {
+  font-size: 0.725rem; /* Slightly larger readability */
+  color: var(--text-muted);
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+/* Redesigned Card Layout with large outline icons */
+.demo-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px; /* Increased grid spacing */
+}
+
+.demo-card {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 14px; /* Increased gap */
+  padding: 14px 16px; /* Expanded padding to fill cards naturally and look spacious */
+  background-color: #ffffff; /* pure white card background */
+  border: 1px solid var(--border-panel);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: border-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.demo-card:hover {
+  border-color: rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px); /* Enhanced visual hover trigger */
+  box-shadow: 0 6px 16px -3px rgba(11, 31, 58, 0.06);
+}
+
+.demo-card.selected {
+  border-color: var(--color-orange);
+  box-shadow: 0 6px 18px -4px rgba(249, 115, 22, 0.15);
+}
+
+/* Left Outline Icon Circle Box */
+.demo-card-icon-container {
+  width: 44px; /* Slightly larger */
+  height: 44px;
+  border-radius: var(--radius-md);
+  background-color: #ffffff;
+  border: 1px solid var(--border-panel);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: border-color var(--transition-fast);
+}
+
+.demo-card:hover .demo-card-icon-container {
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+.demo-card.selected .demo-card-icon-container {
+  border-color: rgba(249, 115, 22, 0.25);
+}
+
+/* Card Details styling */
+.demo-card-details {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: 2px;
+}
+
+.demo-card-role {
+  font-size: 0.85rem; /* Larger role title text */
+  font-weight: 850;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.demo-card-email {
+  font-size: 0.725rem; /* Expanded email readability */
+  color: var(--text-secondary);
+  line-height: 1.2;
+  margin-bottom: 6px;
+}
+
+/* Peach Use Account Badge */
+.use-account-badge {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 4px 10px; /* Taller badge */
+  background-color: var(--color-orange-light);
+  border-radius: var(--radius-sm);
+  color: var(--color-orange);
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  transition: background-color var(--transition-fast);
+}
+
+.demo-card:hover .use-account-badge {
+  background-color: rgba(249, 115, 22, 0.15);
+}
+
+/* Subtle absolute copy button aligned top-right */
+.copy-button-subtle {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--text-muted);
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  opacity: 0.3;
+  transition: opacity var(--transition-fast), color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.demo-card:hover .copy-button-subtle {
+  opacity: 1;
+}
+
+.copy-button-subtle:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+  color: var(--text-primary);
+}
+
+.copy-button-subtle.copied {
+  opacity: 1;
+}
+
+/* Lock footer security link */
+.auth-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 24px; /* Increased spacing */
+  color: var(--text-secondary);
+  font-size: 0.75rem; /* Larger readability */
+  font-weight: 600;
+}
+
+.footer-lock-icon {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+
+/* ==========================================
+   RESPONSIVE DESIGN BREAKPOINTS
+   ========================================== */
+
+/* Laptop / Smaller Screens (Up to 1024px) */
+@media (max-width: 1024px) {
+  .cinematic-hero {
+    width: 52%;
+  }
+  .auth-panel {
+    width: 48%;
+    padding: 24px;
+  }
+}
+
+/* Tablet Portrait Viewports (Up to 768px) */
+@media (max-width: 768px) {
+  .login-viewport {
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  .cinematic-hero {
+    width: 100%;
+    height: 38vh;
+  }
+  .hero-overlay {
+    background: linear-gradient(0deg, var(--bg-page) 0%, rgba(255, 255, 255, 0) 100%);
+  }
+  .auth-panel {
+    width: 100%;
+    height: auto;
+    min-height: 62vh;
+    padding: 32px 24px;
+    border-left: none;
+    border-top: 1px solid var(--border-panel);
+    animation: fadeSlideUp 0.6s ease-out forwards;
+  }
+  .auth-container {
+    max-width: 100%;
+  }
+}
+
+/* Mobile Screen Viewports (Up to 480px) */
+@media (max-width: 480px) {
+  .cinematic-hero {
+    height: 25vh;
+  }
+  .auth-panel {
+    padding: 24px 16px;
+  }
+  .auth-title {
+    font-size: 1.3rem;
+  }
+  .demo-grid {
+    grid-template-columns: 1fr; /* Stack vertically for layout readability */
+  }
+}

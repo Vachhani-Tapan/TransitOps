@@ -1,0 +1,321 @@
+TRANSITOPS
+Smart Transport Operations Platform
+Product Requirements Document
+Version 1.0
+Status Final Draft
+Prepared for Odoo x Gujarat Vidyapith Hackathon - Offline Round
+Team Rachit Kakkad (Lead), Nishit Doshi, Tapan Vachhani, Harshit Kumar
+Date July 2026
+
+--- PAGE BREAK ---
+
+TRANSITOPS - PRODUCT REQUIREMENTS DOCUMENT
+1. Executive Summary
+TransitOps is a centralized transport operations platform that digitizes the full lifecycle of fleet management: vehicle
+registry, driver management, dispatching, maintenance, fuel and expense tracking, and analytics, while enforcing
+hard business rules that prevent unsafe or invalid dispatch decisions. This document extends the baseline problem
+statement with a set of advanced, real-world differentiator modules that go beyond CRUD-and-workflow coverage:
+computed driver risk scoring, dispatch recommendation intelligence, predictive maintenance, duty-hour compliance,
+cost leakage detection, a compliance document vault, and a natural-language operations assistant.
+The objective is twofold: (1) fully satisfy every mandatory requirement and business rule in the official problem
+statement, and (2) demonstrate genuine operational intelligence, the kind of system a real logistics company would
+actually want to run on, so the submission is differentiated from every other team solving the identical brief.
+Aspect Summary
+Problem space Manual, spreadsheet-driven transport operations: scheduling conflicts, missed maintenance,
+expired licenses, inaccurate costing, no real-time visibility.
+Core users Fleet Manager, Dispatcher/Driver, Safety Officer, Financial Analyst
+Baseline scope Auth + RBAC, Dashboard/KPIs, Vehicle Registry, Driver Management, Trip Management,
+Maintenance, Fuel & Expense, Reports & Analytics
+Differentiators Computed Safety Score engine, Dispatch Recommendation Engine, Predictive
+Maintenance, Duty-Hour Compliance, Cost Leakage Detection, Compliance Document
+Vault, NL Ops Assistant, Live Ops Map, Customer Tracking Link
+Delivery format Responsive web app; role-based dashboards; real-time status updates
+2. Problem Statement and Goals
+2.1 Background
+Many logistics companies still run operations on spreadsheets and paper logbooks. This creates scheduling
+conflicts, underutilized vehicles, missed maintenance windows, expired driver licenses, inaccurate expense tracking,
+and near-zero real-time operational visibility for decision-makers.
+2.2 Product Goals
+(cid:127) Digitize the complete transport operations lifecycle in a single system of record.
+(cid:127) Enforce hard business rules automatically so invalid states (double-booked drivers, overloaded vehicles, expired
+licenses on active trips) are structurally impossible, not just discouraged.
+(cid:127) Give every role a real-time, relevant operational view instead of a single generic dashboard.
+(cid:127) Move from reactive operations (fix problems after they happen) to predictive operations (surface risk before it
+becomes a failure) using the operational data the platform already collects.
+(cid:127) Provide a conversational interface so non-technical managers can query fleet state in plain language instead of
+navigating multiple screens.
+2.3 Non-Goals (Out of Scope)
+(cid:127) Payroll processing or HR management for drivers/staff.
+(cid:127) Native mobile apps (a mobile-first responsive web experience is in scope; native iOS/Android apps are not).
+(cid:127) Hardware/IoT integration for live GPS telemetry (simulated/mock telemetry is used for scoring and risk features;
+real GPS hardware integration is a future-phase item).
+(cid:127) Accounting/invoicing/GST compliance - expense tracking feeds analytics only, not a ledger.
+Odoo x Gujarat Vidyapith Hackathon - Offline Round Page 1
+
+--- PAGE BREAK ---
+
+TRANSITOPS - PRODUCT REQUIREMENTS DOCUMENT
+3. User Roles and Personas
+Role Responsibilities Core Need
+Fleet Manager Oversees fleet assets, maintenance, vehicle Wants a single pane of glass; wants to be
+lifecycle and operational efficiency. warned before something breaks, not after.
+Dispatcher / Driver Creates trips, assigns vehicles/drivers, Wants fast, low-friction trip creation with the
+monitors active deliveries; drivers execute trips system doing the safety-checking
+and log fuel/expenses. automatically.
+Safety Officer Ensures driver compliance, tracks license Wants compliance status to be provable and
+validity, monitors safety scores. auditable, not a manual spreadsheet
+cross-check.
+Financial Analyst Reviews operational expenses, fuel Wants to spot cost anomalies before they
+consumption, maintenance costs, profitability. compound across a billing cycle.
+Odoo x Gujarat Vidyapith Hackathon - Offline Round Page 2
+
+--- PAGE BREAK ---
+
+TRANSITOPS - PRODUCT REQUIREMENTS DOCUMENT
+4. Baseline Feature Scope (Problem-Statement Mandatory)
+These modules satisfy every requirement and mandatory deliverable in the official TransitOps problem statement.
+They are foundational; the differentiator layer in Section 5 is built on top of this data.
+Module Coverage
+Authentication & RBAC Email/password login, session handling, role-based access control gating every screen
+and API route by role.
+Dashboard KPIs: Active Vehicles, Available Vehicles, Vehicles in Maintenance, Active Trips,
+Pending Trips, Drivers On Duty, Fleet Utilization (%). Filterable by vehicle type, status,
+region.
+Vehicle Registry Master vehicle list: unique Registration Number, Model, Type, Max Load Capacity,
+Odometer, Acquisition Cost, Status (Available / On Trip / In Shop / Retired).
+Driver Management Driver profiles: Name, License Number/Category/Expiry, Contact, Safety Score, Status
+(Available / On Trip / Off Duty / Suspended).
+Trip Management Create trips with source, destination, vehicle, driver, cargo weight, planned distance.
+Lifecycle: Draft to Dispatched to Completed, or Cancelled.
+Maintenance Maintenance records per vehicle; creating an active record auto-flips vehicle status to In
+Shop and removes it from the dispatch pool.
+Fuel & Expense Management Fuel logs (liters, cost, date) and other expenses (tolls, maintenance); automatic total
+operational cost (Fuel + Maintenance) per vehicle.
+Reports & Analytics Fuel Efficiency (Distance/Fuel), Fleet Utilization, Operational Cost, Vehicle ROI =
+(Revenue - (Maintenance + Fuel)) / Acquisition Cost. CSV export mandatory, PDF
+optional.
+4.1 Mandatory Business Rules (Hard Constraints)
+(cid:127) Vehicle registration number must be unique.
+(cid:127) Retired or In Shop vehicles must never appear in dispatch selection.
+(cid:127) Drivers with expired licenses or Suspended status cannot be assigned to trips.
+(cid:127) A driver or vehicle already marked On Trip cannot be assigned to another trip.
+(cid:127) Cargo Weight must not exceed the vehicle's maximum load capacity.
+(cid:127) Dispatching a trip automatically sets both vehicle and driver status to On Trip.
+(cid:127) Completing a trip automatically reverts both vehicle and driver status to Available.
+(cid:127) Cancelling a dispatched trip restores vehicle and driver to Available.
+(cid:127) Creating an active maintenance record automatically sets vehicle status to In Shop.
+(cid:127) Closing maintenance restores vehicle to Available (unless the vehicle is Retired).
+Odoo x Gujarat Vidyapith Hackathon - Offline Round Page 3
+
+--- PAGE BREAK ---
+
+TRANSITOPS - PRODUCT REQUIREMENTS DOCUMENT
+5. Advanced Differentiator Features
+Every team at this hackathon receives the identical problem statement, so baseline coverage alone cannot
+differentiate a submission. The features below are deliberately not required by the PS but reflect real operational
+needs of transport/logistics businesses, and are engineered to reuse the same underlying data (trips, fuel logs,
+maintenance records) the baseline system already captures, maximizing impact per hour of build time.
+5.1 Computed Driver Risk & Safety Score Engine [P0 - Core Differentiator | Effort: Medium]
+What it is: Replaces the PS's static, manually-entered Safety Score field with a continuously computed score
+derived from real operational signals: harsh-event flags, on-time delivery rate, fuel-anomaly association,
+cancelled/incident trip history, and duty-hour violations.
+Why it wins: A manually-typed number is trivial to fake and demonstrates no engineering depth. A computed,
+auditable, tamper-resistant score is exactly what a real Safety Officer needs and what almost no other team will
+attempt in an 8-hour build.
+Key requirements:
+(cid:127) Weighted formula: On-Time Rate (35%) + Incident-Free Rate (30%) + Duty-Hour Compliance (20%) +
+Fuel-Anomaly-Free Rate (15%), normalized to a 0-100 scale.
+(cid:127) Score recalculates automatically after every completed trip, incident log, or duty-hour flag.
+(cid:127) Full score history/audit trail per driver, viewable by Safety Officer and Fleet Manager.
+(cid:127) Configurable weighting via Settings, so Safety Officer can tune emphasis per organization policy.
+5.2 Dispatch Recommendation Engine [P0 - Core Differentiator | Effort: Medium]
+What it is: Instead of a raw dropdown of available drivers and vehicles, the system ranks the best driver-vehicle
+pairing for a given trip using a scoring model that weighs safety score, vehicle proximity/idle time, cargo-capacity fit,
+and fleet-wear balancing.
+Why it wins: This is the single highest-leverage feature for a live demo: it visibly makes a smart decision in real time
+instead of just validating a manual choice, and it directly answers the real-world question dispatchers actually
+struggle with: who/what should I assign, not just is this assignment valid.
+Key requirements:
+(cid:127) Ranks all eligible (rule-valid) driver+vehicle combinations by a composite fitness score.
+(cid:127) Cargo-capacity fit: penalizes large capacity mismatch (assigning a 2-ton truck to a 50kg parcel) to encourage
+efficient utilization.
+(cid:127) Fleet-wear balancing: deprioritizes vehicles/drivers with disproportionately high recent utilization to spread wear
+evenly.
+(cid:127) Dispatcher can override the recommendation; overrides are logged for later analysis.
+Odoo x Gujarat Vidyapith Hackathon - Offline Round Page 4
+
+--- PAGE BREAK ---
+
+TRANSITOPS - PRODUCT REQUIREMENTS DOCUMENT
+5.3 Predictive Maintenance Alerts [P0 - Core Differentiator | Effort: Medium]
+What it is: Extends the reactive maintenance module into a predictive one: the system forecasts upcoming
+maintenance needs from odometer trend velocity and historical maintenance interval patterns per vehicle, rather
+than waiting for someone to manually raise a request after something breaks.
+Why it wins: The PS's maintenance module is purely reactive. Predicting the need before failure is the difference
+between a logbook digitization and an actual operations platform, a distinction judges evaluating real-world
+applicability will notice.
+Key requirements:
+(cid:127) Tracks odometer-reading velocity (km/day) per vehicle from trip completions.
+(cid:127) Compares current odometer against the vehicle's historical maintenance interval (e.g., service every 10,000km) to
+forecast a predicted service due date.
+(cid:127) Auto-generates a Maintenance Due Soon alert on the Dashboard and Notifications when a vehicle is within a
+configurable threshold (e.g., 500km or 7 days) of its predicted due point.
+(cid:127) Distinguishes forecast-driven alerts visually from reactive fault-reported maintenance records.
+5.4 Duty-Hour & Fatigue Compliance Tracking [P1 - High Value | Effort: Low-Medium]
+What it is: Tracks each driver's consecutive driving hours and trips per rolling 24-hour window, flagging drivers who
+approach or breach safe duty-hour limits, in line with real-world hours-of-service norms for commercial transport.
+Why it wins: This is a genuine regulatory/safety concern in real fleet operations that the PS never mentions at all.
+Building it signals domain understanding beyond implementing the PDF, a strong signal to judges with any
+operations/logistics background.
+Key requirements:
+(cid:127) Rolling-window duty-hour calculation per driver from trip start/end timestamps.
+(cid:127) Configurable maximum duty-hour threshold (default 10 hours/24h window, adjustable in Settings).
+(cid:127) Drivers approaching the threshold are flagged amber; drivers who breach it are blocked from new dispatch until
+reset, feeding the same eligibility check used in Section 5.2.
+(cid:127) Fatigue-risk indicator surfaced on the Safety Officer dashboard and Dispatch Recommendation Engine.
+5.5 Cost Leakage & Anomaly Detection [P1 - High Value | Effort: Low]
+What it is: Reuses the same statistical-baseline approach as driver risk scoring, applied to cost: flags a vehicle
+whose cost-per-km has spiked significantly against its own historical baseline or against similar vehicles in its class,
+surfacing possible fuel pilferage, overbilled maintenance, or inefficient routing.
+Why it wins: Financial Analysts in real fleets spend significant time manually hunting for exactly this kind of leakage
+in spreadsheets. Automating the detection is a low-effort, high-perceived-value feature since it reuses fuel/expense
+data the baseline system already stores.
+Key requirements:
+(cid:127) Computes rolling average cost-per-km per vehicle and flags deviations beyond a configurable standard-deviation
+threshold.
+(cid:127) Cross-vehicle comparison within the same vehicle Type/class to catch outliers even without individual history.
+(cid:127) Anomalies surfaced in Reports & Analytics and pushed to the Notification system for the Financial Analyst role.
+(cid:127) Each anomaly links directly to the underlying fuel log / maintenance record for one-click investigation.
+Odoo x Gujarat Vidyapith Hackathon - Offline Round Page 5
+
+--- PAGE BREAK ---
+
+TRANSITOPS - PRODUCT REQUIREMENTS DOCUMENT
+5.6 Unified Compliance Document Vault [P1 - High Value | Effort: Low]
+What it is: Extends the PS's single license-expiry concept into a full compliance calendar covering every document
+a real commercial vehicle needs: insurance, pollution certificate (PUC), fitness certificate, and permit renewal, each
+with expiry tracking and tiered reminders.
+Why it wins: The PS only asks for license expiry reminders as a bonus feature; real fleets track 4-5 recurring
+compliance documents per vehicle/driver. This closes a real operational gap cheaply and signals attention to
+real-world completeness.
+Key requirements:
+(cid:127) Document model per vehicle/driver: type, document number, issue date, expiry date, uploaded file reference.
+(cid:127) Tiered reminders (30 days / 7 days / expired) feeding the Notification system.
+(cid:127) Vehicles/drivers with any expired mandatory document are automatically excluded from dispatch eligibility, reusing
+the same rule engine as license/status checks.
+(cid:127) Single compliance calendar view for the Safety Officer showing all upcoming expiries across the fleet.
+5.7 Natural-Language Operations Assistant [P0 - Core Differentiator | Effort: Medium-High]
+What it is: A conversational query interface where a Fleet Manager or Financial Analyst can type plain-language
+questions such as which vehicles need maintenance this week, show drivers with expiring licenses, or what was our
+fuel cost last month, and receive an answer generated live from current platform data.
+Why it wins: This is the standout live-demo moment: it is visually memorable, interactive, and directly differentiates
+the team's AI/engineering capability from every other team's static dashboards. It also has the highest
+wow-factor-per-second of any feature in this document.
+Key requirements:
+(cid:127) Natural-language input mapped to a constrained set of pre-defined, safe data queries (no arbitrary code execution
+against the database).
+(cid:127) Role-aware answers: a Driver asking the assistant only sees their own trips/data; a Fleet Manager sees fleet-wide
+answers.
+(cid:127) Answers rendered as a short natural-language summary plus a supporting table/chart where relevant.
+(cid:127) Assistant surfaces a graceful fallback for out-of-scope questions rather than hallucinating.
+5.8 Live Fleet Operations Map [P2 - Nice to Have | Effort: Medium]
+What it is: A real-time visual map for the Fleet Manager showing all On Trip vehicles with live/simulated position
+updates, distinguishing normal trips from those flagged by route-deviation or fatigue alerts.
+Why it wins: A live, moving map is an immediately compelling visual centerpiece in any demo and very few teams
+will have real-time visualization working cleanly within the time constraints, a strong return on a moderate amount of
+build effort.
+Key requirements:
+(cid:127) Simulated/mock GPS position feed per active trip (interpolated between source and destination) if hardware
+telemetry is unavailable.
+(cid:127) Real-time push of position + status updates to the Manager dashboard (WebSocket-based).
+(cid:127) Visual distinction for at-risk trips (fatigue flag, cost anomaly, route deviation) directly on the map.
+Odoo x Gujarat Vidyapith Hackathon - Offline Round Page 6
+
+--- PAGE BREAK ---
+
+TRANSITOPS - PRODUCT REQUIREMENTS DOCUMENT
+5.9 Customer-Facing Shipment Tracking Link [P2 - Nice to Have | Effort: Low]
+What it is: A shareable, read-only, no-login link per trip that an external customer/client can open to see live
+shipment status and ETA, the same pattern used by real logistics platforms.
+Why it wins: The PS is entirely internal-facing; this feature demonstrates awareness of the actual business model
+behind transport operations (the end customer cares about their shipment, not the internal dashboard), for very low
+additional engineering cost.
+Key requirements:
+(cid:127) Unique, unguessable tokenized URL generated per trip at dispatch time.
+(cid:127) Read-only view: status, ETA, and origin/destination; no sensitive internal data (costs, driver personal info) exposed.
+(cid:127) Link automatically expires/deactivates once the trip is Completed or Cancelled.
+Odoo x Gujarat Vidyapith Hackathon - Offline Round Page 7
+
+--- PAGE BREAK ---
+
+TRANSITOPS - PRODUCT REQUIREMENTS DOCUMENT
+6. Data Model (Key Entities)
+Core entities inherited from the baseline problem statement, extended with fields required to power the differentiator
+features above.
+Entity Key Fields
+Vehicle Registration Number (unique), Model, Type, Max Load Capacity, Odometer, Acquisition Cost,
+Status, Predicted Next Service Date, Cost-per-KM Baseline
+Driver Name, License Number/Category/Expiry, Contact, Status, Computed Safety Score, Rolling
+Duty Hours, Score History
+Trip Source, Destination, Vehicle, Driver, Cargo Weight, Planned Distance, Actual Distance, Status,
+Dispatch Recommendation Snapshot, Public Tracking Token
+MaintenanceRecord Vehicle, Type (Reactive / Predicted), Description, Cost, Opened/Closed Dates, Status
+FuelLog / Expense Vehicle, Liters, Cost, Date, Category (Fuel / Toll / Other), Anomaly Flag
+ComplianceDocument Owner (Vehicle/Driver), Document Type, Document Number, Issue Date, Expiry Date, File
+Reference, Status
+Notification Recipient Role/User, Type, Message, Related Entity, Read Status, Created At
+AssistantQueryLog User, Query Text, Resolved Intent, Response Summary, Timestamp (for auditability of NL
+assistant answers)
+7. Non-Functional Requirements
+Category Requirement
+Performance Dashboard KPIs and dispatch recommendations must render in under 1.5s for a fleet of up to
+500 vehicles.
+Reliability All status-transition business rules (Section 4.1) must be enforced server-side, never trusted
+from client input alone.
+Security RBAC enforced at API layer; JWT-based auth; passwords hashed (bcrypt or equivalent); public
+tracking links use unguessable tokens with no PII exposure.
+Auditability Every automatic status change, score recalculation, and NL assistant query is logged with
+actor, timestamp, and before/after state.
+Responsiveness Fully responsive layout across desktop and mobile viewports for all core screens.
+Extensibility Scoring weights (Safety Score, Cost Anomaly threshold, Duty-Hour limit) configurable via
+Settings, not hardcoded.
+8. Proposed Technology Stack
+Layer Choice
+Frontend React (Vite), Tailwind/Framer Motion for UI polish, Recharts for analytics, Socket.IO-client for
+real-time updates
+Odoo x Gujarat Vidyapith Hackathon - Offline Round Page 8
+
+--- PAGE BREAK ---
+
+TRANSITOPS - PRODUCT REQUIREMENTS DOCUMENT
+Layer Choice
+Backend Node.js + Express REST API, Socket.IO for live push events (dispatch status, map,
+notifications)
+Database PostgreSQL with Prisma ORM for type-safe schema and migrations
+Scoring/Intelligence Rule + weighted-scoring engine (Node service) for Safety Score, Dispatch Recommendation,
+Layer Cost Anomaly, Predictive Maintenance
+NL Assistant LLM-backed intent parser constrained to a defined query schema against live Postgres data,
+with role-aware response filtering
+Auth & Security JWT, bcrypt password hashing, Express RBAC middleware guards
+9. Success Metrics (Demo and Judging Criteria Alignment)
+(cid:127) 100% coverage of mandatory business rules and mandatory deliverables from the official problem statement.
+(cid:127) All core differentiator features (5.1, 5.2, 5.3, 5.7, plus one of 5.4/5.5/5.6) fully functional and demoable end-to-end.
+(cid:127) Zero invalid-state bugs during live demo (double-dispatch, overloaded cargo, expired-license dispatch, etc.).
+(cid:127) NL Ops Assistant answers at least 5 distinct query categories correctly live, on real seeded data.
+(cid:127) Judges can trace at least one differentiator feature back to a concrete real-world operational pain point during
+Q&A.;
+10. Build Prioritization (Offline Round)
+Recommended sequencing to guarantee a fully working baseline before layering intelligence, so the team never
+risks an incomplete core system in favor of unfinished advanced features.
+Phase Scope
+Phase 1 - Foundation Auth/RBAC, Vehicle Registry, Driver Management, Trip Management with all
+mandatory business rules, Dashboard KPIs
+Phase 2 - Baseline Completion Maintenance workflow, Fuel & Expense tracking, Reports & Analytics with CSV export
+Phase 3 - Core Differentiators Computed Safety Score Engine (5.1), Dispatch Recommendation Engine (5.2),
+Predictive Maintenance (5.3)
+Phase 4 - Standout Feature Natural-Language Operations Assistant (5.7)
+Phase 5 - Stretch (if time Duty-Hour Compliance (5.4), Cost Leakage Detection (5.5), Compliance Vault (5.6),
+remains) Live Map (5.8), Customer Tracking Link (5.9)
+TransitOps - Product Requirements Document. Prepared by Rachit Kakkad and team for the Odoo x Gujarat Vidyapith Hackathon,
+Offline Round.
+Odoo x Gujarat Vidyapith Hackathon - Offline Round Page 9

@@ -1,0 +1,402 @@
+const prisma = require('../config/db');
+
+/**
+ * Returns role-specific dashboard metrics and datasets.
+ */
+const getOverviewData = async (userId, role) => {
+  switch (role) {
+    case 'FLEET_MANAGER':
+      return getFleetManagerData();
+    case 'DISPATCHER':
+      return getDispatcherData();
+    case 'DRIVER':
+      return getDriverData(userId);
+    case 'SAFETY_OFFICER':
+      return getSafetyOfficerData();
+    case 'FINANCIAL_ANALYST':
+      return getFinancialAnalystData();
+    default:
+      throw new Error(`Unsupported dashboard role: ${role}`);
+  }
+};
+
+/**
+ * FLEET MANAGER DASHBOARD
+ */
+async function getFleetManagerData() {
+  const [totalVehicles, availableVehicles, onTripVehicles, maintenanceVehicles, activeTrips, pendingTrips, driversOnDuty] = await Promise.all([
+    prisma.vehicle.count({ where: { status: { not: 'retired' } } }),
+    prisma.vehicle.count({ where: { status: 'available' } }),
+    prisma.vehicle.count({ where: { status: 'on_trip' } }),
+    prisma.vehicle.count({ where: { status: 'in_shop' } }),
+    prisma.trip.count({ where: { status: 'dispatched' } }),
+    prisma.trip.count({ where: { status: 'draft' } }),
+    prisma.driver.count({ where: { status: { in: ['available', 'on_trip'] } } })
+  ]);
+
+  const utilizationRate = totalVehicles > 0 
+    ? parseFloat(((onTripVehicles / totalVehicles) * 100).toFixed(1)) 
+    : 0;
+
+  // Fleet Status Distribution Chart Data
+  const fleetStatusData = [
+    { name: 'Available', value: availableVehicles, color: '#4CAF50' },
+    { name: 'On Trip', value: onTripVehicles, color: '#1E88E5' },
+    { name: 'In Shop', value: maintenanceVehicles, color: '#F44336' }
+  ];
+
+  // Recent operational activity logs (trips & maintenance records)
+  const [recentTrips, activeMaintenance] = await Promise.all([
+    prisma.trip.findMany({
+      take: 5,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        vehicle: { select: { registrationNumber: true } },
+        driver: { select: { fullName: true } }
+      }
+    }),
+    prisma.maintenanceRecord.findMany({
+      take: 5,
+      where: { status: 'open' },
+      orderBy: { openedAt: 'desc' },
+      include: { vehicle: { select: { registrationNumber: true } } }
+    })
+  ]);
+
+  return {
+    kpis: {
+      totalVehicles,
+      availableVehicles,
+      onTripVehicles,
+      maintenanceVehicles,
+      activeTrips,
+      pendingTrips,
+      driversOnDuty,
+      utilizationRate
+    },
+    fleetStatusData,
+    recentTrips: recentTrips.map(t => ({
+      id: t.id,
+      route: `${t.source} → ${t.destination}`,
+      vehicle: t.vehicle.registrationNumber,
+      driver: t.driver.fullName,
+      status: t.status.toUpperCase(),
+      timestamp: t.createdAt
+    })),
+    activeMaintenance: activeMaintenance.map(m => ({
+      id: m.id,
+      vehicle: m.vehicle.registrationNumber,
+      type: m.type,
+      description: m.description,
+      status: m.status.toUpperCase(),
+      openedAt: m.openedAt
+    }))
+  };
+}
+
+/**
+ * DISPATCHER DASHBOARD
+ */
+async function getDispatcherData() {
+  const [pendingTrips, activeTrips, availableVehicles, availableDrivers] = await Promise.all([
+    prisma.trip.findMany({
+      where: { status: 'draft' },
+      include: {
+        vehicle: { select: { registrationNumber: true, model: true } },
+        driver: { select: { fullName: true, rollingDutyHours: true } }
+      },
+      orderBy: { createdAt: 'asc' }
+    }),
+    prisma.trip.findMany({
+      where: { status: 'dispatched' },
+      include: {
+        vehicle: { select: { registrationNumber: true } },
+        driver: { select: { fullName: true } }
+      },
+      orderBy: { dispatchedAt: 'desc' }
+    }),
+    prisma.vehicle.findMany({
+      where: { status: 'available' },
+      select: { id: true, registrationNumber: true, model: true, type: true }
+    }),
+    prisma.driver.findMany({
+      where: { status: 'available' },
+      select: { id: true, fullName: true, rollingDutyHours: true, safetyScore: true }
+    })
+  ]);
+
+  return {
+    kpis: {
+      pendingCount: pendingTrips.length,
+      activeCount: activeTrips.length,
+      availableVehiclesCount: availableVehicles.length,
+      availableDriversCount: availableDrivers.length
+    },
+    pendingTrips: pendingTrips.map(t => ({
+      id: t.id,
+      source: t.source,
+      destination: t.destination,
+      cargoWeightKg: parseFloat(t.cargoWeightKg),
+      plannedDistanceKm: parseFloat(t.plannedDistanceKm),
+      vehicle: t.vehicle ? `${t.vehicle.registrationNumber} (${t.vehicle.model})` : 'Unassigned',
+      driver: t.driver ? `${t.driver.fullName} (${parseFloat(t.driver.rollingDutyHours)} hrs)` : 'Unassigned'
+    })),
+    activeTrips: activeTrips.map(t => ({
+      id: t.id,
+      source: t.source,
+      destination: t.destination,
+      vehicle: t.vehicle.registrationNumber,
+      driver: t.driver.fullName,
+      dispatchedAt: t.dispatchedAt
+    })),
+    availableVehicles,
+    availableDrivers
+  };
+}
+
+/**
+ * DRIVER DASHBOARD
+ */
+async function getDriverData(userId) {
+  // 1. Resolve user ID to driver_id from profiles table
+  const profile = await prisma.$queryRaw`
+    SELECT driver_id FROM public.profiles WHERE id = ${userId}::uuid LIMIT 1
+  `;
+
+  const driverId = profile && profile[0] ? profile[0].driver_id : null;
+  if (!driverId) {
+    return {
+      error: 'No driver associated with this profile.'
+    };
+  }
+
+  // 2. Fetch driver stats, current assignments, and history
+  const [driver, trips] = await Promise.all([
+    prisma.driver.findUnique({ where: { id: driverId } }),
+    prisma.trip.findMany({
+      where: { driverId },
+      include: { vehicle: true },
+      orderBy: { createdAt: 'desc' }
+    })
+  ]);
+
+  if (!driver) {
+    return {
+      error: 'Driver details not found in drivers table.'
+    };
+  }
+
+  const activeTrip = trips.find(t => t.status === 'dispatched');
+  const upcomingTrips = trips.filter(t => t.status === 'draft');
+
+  return {
+    driver: {
+      name: driver.fullName,
+      licenseNumber: driver.licenseNumber,
+      safetyScore: parseFloat(driver.safetyScore),
+      rollingDutyHours: parseFloat(driver.rollingDutyHours),
+      status: driver.status.toUpperCase()
+    },
+    activeTrip: activeTrip ? {
+      id: activeTrip.id,
+      source: activeTrip.source,
+      destination: activeTrip.destination,
+      cargoWeightKg: parseFloat(activeTrip.cargoWeightKg),
+      plannedDistanceKm: parseFloat(activeTrip.plannedDistanceKm),
+      vehicle: `${activeTrip.vehicle.registrationNumber} (${activeTrip.vehicle.model})`,
+      dispatchedAt: activeTrip.dispatchedAt
+    } : null,
+    upcomingTrips: upcomingTrips.map(t => ({
+      id: t.id,
+      source: t.source,
+      destination: t.destination,
+      plannedDistanceKm: parseFloat(t.plannedDistanceKm),
+      vehicle: `${t.vehicle.registrationNumber} (${t.vehicle.model})`
+    }))
+  };
+}
+
+/**
+ * SAFETY OFFICER DASHBOARD
+ */
+async function getSafetyOfficerData() {
+  const now = new Date();
+  const thirtyDaysFromNow = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+
+  const [drivers, totalSuspended] = await Promise.all([
+    prisma.driver.findMany({ select: { id: true, fullName: true, licenseExpiry: true, safetyScore: true, status: true } }),
+    prisma.driver.count({ where: { status: 'suspended' } })
+  ]);
+
+  let expiredLicenses = 0;
+  let expiringSoonLicenses = 0;
+  let safetyScoreSum = 0;
+  let excellentCount = 0;
+  let goodCount = 0;
+  let atRiskCount = 0;
+
+  const alertingDrivers = [];
+
+  for (const d of drivers) {
+    const expiry = new Date(d.licenseExpiry);
+    const score = parseFloat(d.safetyScore);
+    safetyScoreSum += score;
+
+    // Safety classification
+    if (score >= 90) excellentCount++;
+    else if (score >= 80) goodCount++;
+    else atRiskCount++;
+
+    // License checks
+    if (expiry < now) {
+      expiredLicenses++;
+      alertingDrivers.push({
+        id: d.id,
+        name: d.fullName,
+        issue: 'Expired Driver License',
+        expiryDate: d.licenseExpiry,
+        severity: 'CRITICAL'
+      });
+    } else if (expiry <= thirtyDaysFromNow) {
+      expiringSoonLicenses++;
+      alertingDrivers.push({
+        id: d.id,
+        name: d.fullName,
+        issue: 'License Expiring Soon',
+        expiryDate: d.licenseExpiry,
+        severity: 'WARNING'
+      });
+    }
+
+    // High risk flag
+    if (score < 75) {
+      alertingDrivers.push({
+        id: d.id,
+        name: d.fullName,
+        issue: `Critical Safety Score: ${score}`,
+        expiryDate: d.licenseExpiry,
+        severity: 'CRITICAL'
+      });
+    }
+  }
+
+  const averageSafetyScore = drivers.length > 0
+    ? parseFloat((safetyScoreSum / drivers.length).toFixed(1))
+    : 100;
+
+  const safetyDistribution = [
+    { name: 'Excellent (>=90)', value: excellentCount, color: '#4CAF50' },
+    { name: 'Good (80-89)', value: goodCount, color: '#FFB300' },
+    { name: 'At Risk (<80)', value: atRiskCount, color: '#F44336' }
+  ];
+
+  return {
+    kpis: {
+      averageSafetyScore,
+      expiredLicenses,
+      expiringSoonLicenses,
+      suspendedDrivers: totalSuspended,
+      totalDrivers: drivers.length
+    },
+    safetyDistribution,
+    alertingDrivers
+  };
+}
+
+/**
+ * FINANCIAL ANALYST DASHBOARD
+ */
+async function getFinancialAnalystData() {
+  const [fuelAggregate, maintenanceAggregate, otherAggregate, vehicles, trips] = await Promise.all([
+    prisma.expense.aggregate({
+      where: { category: 'fuel' },
+      _sum: { cost: true }
+    }),
+    prisma.maintenanceRecord.aggregate({
+      _sum: { cost: true }
+    }),
+    prisma.expense.aggregate({
+      where: { category: { not: 'fuel' } },
+      _sum: { cost: true }
+    }),
+    prisma.vehicle.findMany({
+      select: { id: true, registrationNumber: true, model: true, acquisitionCost: true }
+    }),
+    prisma.trip.findMany({
+      where: { status: 'completed' },
+      select: { id: true, vehicleId: true, revenue: true }
+    })
+  ]);
+
+  const fuelCost = parseFloat(fuelAggregate._sum.cost) || 0;
+  const maintenanceCost = parseFloat(maintenanceAggregate._sum.cost) || 0;
+  const otherCost = parseFloat(otherAggregate._sum.cost) || 0;
+  const totalCost = fuelCost + maintenanceCost + otherCost;
+
+  // Expenses chart data
+  const expenseBreakdown = [
+    { name: 'Fuel Expenditure', value: fuelCost, color: '#FFB300' },
+    { name: 'Maintenance Log Costs', value: maintenanceCost, color: '#E53935' },
+    { name: 'Other (Toll/Misc)', value: otherCost, color: '#1E88E5' }
+  ];
+
+  // Dynamically calculate ROI per vehicle
+  // ROI = (Revenue - Expenses - Maintenance) / Acquisition Cost * 100
+  const vehicleROI = [];
+  for (const v of vehicles) {
+    const acqCost = parseFloat(v.acquisitionCost) || 0;
+
+    // Filter completed trips for this vehicle
+    const vehicleTrips = trips.filter(t => t.vehicleId === v.id);
+    const revenue = vehicleTrips.reduce((sum, t) => sum + (parseFloat(t.revenue) || 0), 0);
+
+    // Sum fuel and maintenance for this vehicle
+    const [fuelVeh, maintVeh] = await Promise.all([
+      prisma.expense.aggregate({
+        where: { vehicleId: v.id, category: 'fuel' },
+        _sum: { cost: true }
+      }),
+      prisma.maintenanceRecord.aggregate({
+        where: { vehicleId: v.id },
+        _sum: { cost: true }
+      })
+    ]);
+
+    const fuelSpend = parseFloat(fuelVeh._sum.cost) || 0;
+    const maintSpend = parseFloat(maintVeh._sum.cost) || 0;
+
+    const profit = revenue - (fuelSpend + maintSpend);
+    const roiPercent = acqCost > 0
+      ? parseFloat(((profit / acqCost) * 100).toFixed(1))
+      : 0;
+
+    vehicleROI.push({
+      id: v.id,
+      registrationNumber: v.registrationNumber,
+      model: v.model,
+      revenue,
+      costs: fuelSpend + maintSpend,
+      profit,
+      acquisitionCost: acqCost,
+      roiPercent
+    });
+  }
+
+  // Sort by highest ROI percent first
+  vehicleROI.sort((a, b) => b.roiPercent - a.roiPercent);
+
+  return {
+    kpis: {
+      fuelCost,
+      maintenanceCost,
+      otherCost,
+      totalCost
+    },
+    expenseBreakdown,
+    vehicleROI
+  };
+}
+
+module.exports = {
+  getOverviewData,
+};
