@@ -95,35 +95,10 @@ export default function DemoAccessGrid({ selectedEmail, onSelectAccount }) {
                 <Icon size={18} strokeWidth={1.5} style={{ color: account.color }} />
               </div>
 
-              {/* Card Center: Title, Email & Use account Badge */}
+              {/* Card Center: Role Title */}
               <div className="demo-card-details">
                 <span className="demo-card-role">{account.role}</span>
-                <span className="demo-card-email">{account.email}</span>
-                <span className="demo-card-password" style={{ fontSize: '0.675rem', color: 'var(--color-orange)', fontWeight: '700', marginBottom: '4px' }}>
-                  PW: {account.password}
-                </span>
-                <div className="use-account-badge">
-                  <span>Use account</span>
-                </div>
               </div>
-
-              {/* Subtle absolute Copy button */}
-              <button
-                type="button"
-                className={`copy-button-subtle ${isCopied ? 'copied' : ''}`}
-                onClick={(e) => handleCopy(e, account.email, account.id)}
-                aria-label={`Copy credentials for ${account.role}`}
-                title={`Copy credentials for ${account.role}`}
-              >
-                {isCopied ? (
-                  <>
-                    <span className="copy-feedback-text">Copied</span>
-                    <Check size={12} className="copy-icon success" />
-                  </>
-                ) : (
-                  <Copy size={12} className="copy-icon" />
-                )}
-              </button>
             </div>
           );
         })}
