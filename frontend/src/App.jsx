@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import LoginPage from './pages/Login/LoginPage';
 import DashboardLayout from './components/layout/DashboardLayout';
 import Dashboard from './pages/Dashboard/Dashboard';
+import AdminControlCenter from './pages/Admin/AdminControlCenter';
 
 // Finance Pages
 import VehicleProfitabilityPage from './pages/Finance/VehicleProfitabilityPage';
@@ -76,6 +77,12 @@ function App() {
           {/* Protected Dashboard Routes */}
           <Route element={<DashboardLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/admin" element={<Navigate to="/admin/users" replace />} />
+            <Route path="/admin/users" element={<AdminControlCenter tab="users" hideTabs={true} />} />
+            <Route path="/admin/permissions" element={<AdminControlCenter tab="permissions" hideTabs={true} />} />
+            <Route path="/admin/audit" element={<AdminControlCenter tab="audit" hideTabs={true} />} />
+            <Route path="/admin/security" element={<AdminControlCenter tab="security" hideTabs={true} />} />
+            <Route path="/admin/settings" element={<AdminControlCenter tab="settings" hideTabs={true} />} />
             {/* Fallback to dashboard for other sub-routes in shell */}
             <Route path="/vehicles" element={<Navigate to="/dashboard" replace />} />
             <Route path="/trips" element={<Dashboard />} />
