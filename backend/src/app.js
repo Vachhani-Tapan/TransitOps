@@ -11,6 +11,7 @@ const authRoutes = require('./routes/auth.routes');
 const healthRoutes = require('./routes/health.routes');
 const dashboardRoutes = require('./routes/dashboard.routes');
 const financeRoutes = require('./routes/finance.routes');
+const safetyRoutes = require('./routes/safety.routes');
 
 const app = express();
 
@@ -38,6 +39,7 @@ app.use('/api', healthRoutes);
 app.use('/api', authRoutes);
 app.use('/api', dashboardRoutes);
 app.use('/api', financeRoutes);
+app.use('/api', safetyRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
