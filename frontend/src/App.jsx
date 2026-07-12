@@ -24,9 +24,9 @@ function App() {
             <Route path="/admin/settings" element={<AdminControlCenter tab="settings" hideTabs={true} />} />
             {/* Fallback to dashboard for other sub-routes in shell */}
             <Route path="/vehicles" element={<Navigate to="/dashboard" replace />} />
-            <Route path="/trips" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/trips" element={<Dashboard />} />
             <Route path="/maintenance" element={<Navigate to="/dashboard" replace />} />
-            <Route path="/drivers" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/drivers" element={<Dashboard />} />
             <Route path="/analytics" element={<Navigate to="/dashboard" replace />} />
           </Route>
 
